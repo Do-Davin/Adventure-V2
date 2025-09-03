@@ -16,42 +16,48 @@ public class Sound {
     int volumeScale = 3;
     float volume;
 
+    final String[] SOUND_FILES = {
+        "Background_music.wav",
+        "bootSE.wav",
+        "Receive_Damage.wav",
+        "Swing_Sword.wav",
+        "Zombie_hurt1.wav",
+        "Zombie_hurt2.wav",
+        "Zombie_death.wav",
+        "cursor.wav",
+        "pop.wav",
+        "drink.wav",
+        "fireball.wav",
+        "arrow.wav",
+        "Skeleton_hurt2.wav",
+        "Skeleton_hurt3.wav",
+        "Skeleton_death.wav",
+        "cut.wav",
+        "door.wav",
+        "door_close.wav",
+        "portial.wav",
+        "chest.wav",
+        "Golem_hurt1.wav",
+        "Golem_hurt2.wav",
+        "Golem_death.wav",
+        "Golem_damage.wav",
+        "Sheild.wav",
+        "victory.wav",
+        "gameover.wav",
+        "dungeon.wav",
+        "bossfight.wav"
+    };  
+
     public Sound() {
-        soundURL[0] = getClass().getResource("/sound/Background_music.wav");
-        soundURL[1] = getClass().getResource("/sound/bootSE.wav");
-        soundURL[2] = getClass().getResource("/sound/Receive_Damage.wav");
-        soundURL[3] = getClass().getResource("/sound/Swing_Sword.wav");
-        soundURL[4] = getClass().getResource("/sound/Zombie_hurt1.wav");
-        soundURL[5] = getClass().getResource("/sound/Zombie_hurt2.wav");
-        soundURL[6] = getClass().getResource("/sound/Zombie_death.wav");
-        soundURL[7] = getClass().getResource("/sound/cursor.wav");
-        soundURL[8] = getClass().getResource("/sound/pop.wav");
-        soundURL[9] = getClass().getResource("/sound/drink.wav");
-        soundURL[10] = getClass().getResource("/sound/fireball.wav");
-        soundURL[11] = getClass().getResource("/sound/arrow.wav");
-        soundURL[12] = getClass().getResource("/sound/Skeleton_hurt2.wav");
-        soundURL[13] = getClass().getResource("/sound/Skeleton_hurt3.wav");
-        soundURL[14] = getClass().getResource("/sound/Skeleton_death.wav");
-        soundURL[15] = getClass().getResource("/sound/cut.wav");
-        soundURL[16] = getClass().getResource("/sound/door.wav");
-        soundURL[17] = getClass().getResource("/sound/door_close.wav");
-        soundURL[18] = getClass().getResource("/sound/portial.wav");
-        soundURL[19] = getClass().getResource("/sound/chest.wav");
-        soundURL[20] = getClass().getResource("/sound/Golem_hurt1.wav");
-        soundURL[21] = getClass().getResource("/sound/Golem_hurt2.wav");
-        soundURL[22] = getClass().getResource("/sound/Golem_death.wav");
-        soundURL[23] = getClass().getResource("/sound/Golem_damage.wav");
-        soundURL[24] = getClass().getResource("/sound/Sheild.wav");
-        soundURL[25] = getClass().getResource("/sound/victory.wav");
-        soundURL[26] = getClass().getResource("/sound/gameover.wav");
-        soundURL[27] = getClass().getResource("/sound/dungeon.wav");
-        soundURL[28] = getClass().getResource("/sound/bossfight.wav");
-
-
+        for(int i = 0; i < SOUND_FILES.length; i++) {
+            soundURL[i] = getClass().getResource("/sound/" + SOUND_FILES[i]);
+        }
     }
 
     public void setFile(int i) {
         try {
+            if (i < 0 || i >= soundURL.length) return;
+
             currentTrackPath = soundURL[i].toString(); // Save path for resume
             audioStream = AudioSystem.getAudioInputStream(soundURL[i]);
             clip = AudioSystem.getClip();
