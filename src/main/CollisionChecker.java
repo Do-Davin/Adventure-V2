@@ -1,0 +1,251 @@
+package main;
+
+import entity.Entity;
+
+public class CollisionChecker {
+
+	GamePanel gp;
+
+	public CollisionChecker(GamePanel gp) {
+		this.gp = gp;
+	}
+
+	public void checkTile(Entity entity) {
+
+		// Calculate player's solidArea corners
+		int entityLeftWorldX = entity.worldX + entity.solidArea.x;
+		int entityRightWorldX = entity.worldX + entity.solidArea.x + entity.solidArea.width;
+		int entityTopWorldY = entity.worldY + entity.solidArea.y;
+		int entityBottomWorldY = entity.worldY + entity.solidArea.y + entity.solidArea.height;
+
+		// Convert pixel positions to tile grid positions
+		int entityLeftCol = entityLeftWorldX / gp.tileSize;
+		int entityRightCol = entityRightWorldX / gp.tileSize;
+		int entityTopRow = entityTopWorldY / gp.tileSize;
+		int entityBottomRow = entityBottomWorldY / gp.tileSize;
+
+		int tileNum1, tileNum2;
+		
+		// use a tamporal direction when it's being knockBacked
+		String direction = entity.direction;
+		if(entity.knockBack == true) {
+			direction = entity.knockBackDirection;
+		}
+
+		switch (direction) {
+
+		case "up":
+
+			entityTopRow = (entityTopWorldY - entity.speed) / gp.tileSize;
+			tileNum1 = gp.tileM.mapTileNum[gp.currentMap][entityLeftCol][entityTopRow];
+			tileNum2 = gp.tileM.mapTileNum[gp.currentMap][entityRightCol][entityTopRow];
+
+			if (gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true) {
+				entity.collisionOn = true;
+			}
+
+			break;
+		case "down":
+
+			entityBottomRow = (entityBottomWorldY + entity.speed) / gp.tileSize;
+			tileNum1 = gp.tileM.mapTileNum[gp.currentMap][entityLeftCol][entityBottomRow];
+			tileNum2 = gp.tileM.mapTileNum[gp.currentMap][entityRightCol][entityBottomRow];
+
+			if (gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true) {
+				entity.collisionOn = true;
+			}
+
+			break;
+		case "right":
+
+			entityRightCol = (entityRightWorldX + entity.speed) / gp.tileSize;
+			tileNum1 = gp.tileM.mapTileNum[gp.currentMap][entityRightCol][entityTopRow];
+			tileNum2 = gp.tileM.mapTileNum[gp.currentMap][entityRightCol][entityBottomRow];
+
+			if (gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true) {
+				entity.collisionOn = true;
+			}
+
+			break;
+		case "left":
+
+			entityLeftCol = (entityLeftWorldX - entity.speed) / gp.tileSize;
+			tileNum1 = gp.tileM.mapTileNum[gp.currentMap][entityLeftCol][entityTopRow];
+			tileNum2 = gp.tileM.mapTileNum[gp.currentMap][entityLeftCol][entityBottomRow];
+
+			if (gp.tileM.tile[tileNum1].collision == true || gp.tileM.tile[tileNum2].collision == true) {
+				entity.collisionOn = true;
+			}
+
+			break;
+
+		}
+
+	}
+
+	public int checkObject(Entity entity, boolean player) { // Check entity is player or not
+
+	    int index = -1;
+
+	    for (int i = 0; i < gp.obj[1].length; i++) { // FIXED
+
+	        if (gp.obj[gp.currentMap][i] != null) { // FIXED
+	            
+	            // ADD THIS CHECK: Skip decorative objects entirely
+	            if (gp.obj[gp.currentMap][i].type == entity.type_portal) {
+	                continue; // Skip to next object
+	            }
+
+	            // Get entity's solid area position
+	            entity.solidArea.x = entity.worldX + entity.solidArea.x;
+	            entity.solidArea.y = entity.worldY + entity.solidArea.y;
+	            // Get the object's solid area position
+	            gp.obj[gp.currentMap][i].solidArea.x = gp.obj[gp.currentMap][i].worldX + gp.obj[gp.currentMap][i].solidArea.x; // FIXED
+	            gp.obj[gp.currentMap][i].solidArea.y = gp.obj[gp.currentMap][i].worldY + gp.obj[gp.currentMap][i].solidArea.y; // FIXED
+
+	            switch (entity.direction) {
+
+	            case "up":
+	                entity.solidArea.y -= entity.speed;
+	                break;
+
+	            case "down":
+	                entity.solidArea.y += entity.speed;
+	                break;
+
+	            case "left":
+	                entity.solidArea.x -= entity.speed;
+	                break;
+
+	            case "right":
+	                entity.solidArea.x += entity.speed;
+	                break;
+
+	            }
+
+	            // Auto checks if 2 rectangles are colliding or not
+	            if (entity.solidArea.intersects(gp.obj[gp.currentMap][i].solidArea)) { // entity pas object ort? // FIXED
+	                if (gp.obj[gp.currentMap][i].collision == true) { // FIXED
+	                    entity.collisionOn = true;
+	                }
+	                if (player == true) { // NPC or monster can't pick objects
+	                    index = i;
+	                }
+	            }
+
+	            // Reset solidArea.x/y to prevent keep increasing value
+	            entity.solidArea.x = entity.solidAreaDefaultX;
+	            entity.solidArea.y = entity.solidAreaDefaultY;
+	            gp.obj[gp.currentMap][i].solidArea.x = gp.obj[gp.currentMap][i].solidAreaDefaultX; // FIXED
+	            gp.obj[gp.currentMap][i].solidArea.y = gp.obj[gp.currentMap][i].solidAreaDefaultY; // FIXED
+	        }
+
+	    }
+
+	    return index;
+
+	}
+
+	public int checkEntity(Entity entity, Entity[][] target) {
+		int index = -1;
+		
+		// use a tamporal direction when it's being knockBacked
+				String direction = entity.direction;
+				if(entity.knockBack == true) {
+					direction = entity.knockBackDirection;
+				}
+
+		for (int i = 0; i < target[1].length; i++) { // FIXED
+
+			if (target[gp.currentMap][i] != null) { // FIXED
+
+				// Get entity's solid area position
+				entity.solidArea.x = entity.worldX + entity.solidArea.x;
+				entity.solidArea.y = entity.worldY + entity.solidArea.y;
+				// Get the object's solid area position
+				target[gp.currentMap][i].solidArea.x = target[gp.currentMap][i].worldX + target[gp.currentMap][i].solidArea.x; // FIXED
+				target[gp.currentMap][i].solidArea.y = target[gp.currentMap][i].worldY + target[gp.currentMap][i].solidArea.y; // FIXED
+
+				switch (direction) {
+
+				case "up":
+					entity.solidArea.y -= entity.speed;
+					break;
+
+				case "down":
+					entity.solidArea.y += entity.speed;
+					break;
+
+				case "left":
+					entity.solidArea.x -= entity.speed;
+					break;
+
+				case "right":
+					entity.solidArea.x += entity.speed;
+					break;
+
+				}
+
+				// Auto checks if 2 rectangles are colliding or not
+				if (entity.solidArea.intersects(target[gp.currentMap][i].solidArea)) { // entity pas object ort? // FIXED
+					if (target[gp.currentMap][i] != entity) { // FIXED
+						entity.collisionOn = true;
+						index = i;
+					}
+				}
+				// Reset solidArea.x/y to prevent keep increasing value
+				entity.solidArea.x = entity.solidAreaDefaultX;
+				entity.solidArea.y = entity.solidAreaDefaultY;
+				target[gp.currentMap][i].solidArea.x = target[gp.currentMap][i].solidAreaDefaultX; // FIXED
+				target[gp.currentMap][i].solidArea.y = target[gp.currentMap][i].solidAreaDefaultY; // FIXED
+
+			}
+
+		}
+		return index;
+	}
+
+	public boolean checkPlayer(Entity entity) {
+
+		boolean contactPlayer = false;
+		// Get entity's solid area position
+		entity.solidArea.x = entity.worldX + entity.solidArea.x;
+		entity.solidArea.y = entity.worldY + entity.solidArea.y;
+		// Get the object's solid area position
+		gp.player.solidArea.x = gp.player.worldX + gp.player.solidArea.x;
+		gp.player.solidArea.y = gp.player.worldY + gp.player.solidArea.y;
+
+		switch (entity.direction) {
+
+		case "up":
+			entity.solidArea.y -= entity.speed;
+			break;
+
+		case "down":
+			entity.solidArea.y += entity.speed;
+			break;
+
+		case "left":
+			entity.solidArea.x -= entity.speed;
+			break;
+
+		case "right":
+			entity.solidArea.x += entity.speed;
+			break;
+		}
+
+		// Auto checks if 2 rectangles are colliding or not
+		if (entity.solidArea.intersects(gp.player.solidArea)) { // entity pas object ort?
+			entity.collisionOn = true;
+			contactPlayer =true;
+		}
+
+		// Reset solidArea.x/y to prevent keep increasing value
+		entity.solidArea.x = entity.solidAreaDefaultX;
+		entity.solidArea.y = entity.solidAreaDefaultY;
+		gp.player.solidArea.x = gp.player.solidAreaDefaultX;
+		gp.player.solidArea.y = gp.player.solidAreaDefaultY;
+		
+		return contactPlayer;
+	}
+}
