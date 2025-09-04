@@ -154,13 +154,16 @@ public class KeyHandler implements KeyListener {
 			}
 		}
 		
-		// reload map for debug
+		// reload map for debug (For Developer)
+
+		/* 
 		if (code == KeyEvent.VK_R) {
 			switch(gp.currentMap) {
 			case 0: gp.tileM.loadMap("/maps/world01.txt", 0); break;
 			case 1: gp.tileM.loadMap("/maps/home.txt", 1); break;
 			}
 		}
+		*/
 	}
 
 	public void characterState(int code) {

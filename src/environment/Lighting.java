@@ -145,18 +145,20 @@ public class Lighting {
 		}
 		g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 		
-		// DUBUG
-		String situation = "";
+		// DUBUG (For Developer)
 		
-		switch(dayState) {
-		case day: situation = "Day"; break;
-		case dusk: situation = "Dusk"; break;
-		case night: situation = "Night"; break;
-		case dawn: situation = "Dawn"; break;
-		}
+		// String situation = "";
+		
+		// switch(dayState) {
+		// case day: situation = "Day"; break;
+		// case dusk: situation = "Dusk"; break;
+		// case night: situation = "Night"; break;
+		// case dawn: situation = "Dawn"; break;
+		// }
+		
 		g2.setColor(Color.white);
 		g2.setFont(g2.getFont().deriveFont(25f));
-		g2.drawString(situation, 620, 540);
+		// g2.drawString(situation, 620, 540);
 	}
 	
 }
